@@ -34,12 +34,8 @@
 #define ValueiOS6_7(ios6, ios7) (([UIDevice currentDevice].systemVersion.integerValue >= 7) ? ios7 : ios6)
 
 @interface VCBaseTests : SenTestCase
-{
-	UIWindow* mainWindow;
-}
 
-- (void) pause:(NSTimeInterval) seconds;
-- (void) pauseStandard;
+@property (nonatomic, readonly) UIWindow* mainWindow;
 
 @end
 
@@ -52,7 +48,7 @@
 {
 	[super setUp];
 	
-	mainWindow = [UIApplication sharedApplication].keyWindow;
+	_mainWindow = [UIApplication sharedApplication].keyWindow;
 }
 
 - (void) performTest:(SenTestRun *) aRun
@@ -76,6 +72,14 @@
 	[self pause:0.15];
 }
 
+- (void) waitUntilLayoutSubviewsInViewController:(UIViewController*) viewController
+{
+	[viewController.view setNeedsLayout];
+	
+	//	Let the runloop layout
+	[self pause:0];
+}
+
 #pragma mark -
 #pragma mark Tests
 
@@ -86,7 +90,8 @@
 	//	Insets before the view controller is presented
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:controller.view], UIEdgeInsetsMake(0, 0, 0, 0)), @"Invalid");
 	
-	[mainWindow setRootViewController:controller];
+	[self.mainWindow setRootViewController:controller];
+	[self waitUntilLayoutSubviewsInViewController:controller];
 	
 	//	Insets after the view controller is presented
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:controller.view], UIEdgeInsetsMake(ValueiOS6_7(0, controller.topLayoutGuideLength), 0, 0, 0)), @"Top view should be inset by full layout guides");
@@ -110,7 +115,8 @@
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewBetweenInset], UIEdgeInsetsMake(0, 0, 0, 0)), @"Invalid");
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewInsetFromTop], UIEdgeInsetsMake(0, 0, 0, 0)), @"Invalid");
 	
-	[mainWindow setRootViewController:controller];
+	[self.mainWindow setRootViewController:controller];
+	[self waitUntilLayoutSubviewsInViewController:controller];
 	
 	//	Insets after the view controller is presented
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewAtTop], UIEdgeInsetsMake(ValueiOS6_7(0, controller.topLayoutGuideLength), 0, 0, 0)), @"Top view should be inset by full layout guides");
@@ -142,7 +148,8 @@
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewBetweenInsetSubview], UIEdgeInsetsMake(0, 0, 0, 0)), @"Invalid");
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewInsetFromTopSubview], UIEdgeInsetsMake(0, 0, 0, 0)), @"Invalid");
 	
-	[mainWindow setRootViewController:controller];
+	[self.mainWindow setRootViewController:controller];
+	[self waitUntilLayoutSubviewsInViewController:controller];
 	
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewAtTopSubview], UIEdgeInsetsMake(ValueiOS6_7(0, controller.topLayoutGuideLength - 5), 0, 0, 0)), @"Top view should be inset by full layout guides");
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewBetweenInsetSubview], UIEdgeInsetsMake(ValueiOS6_7(0, controller.topLayoutGuideLength - 10), 0, 0, 0)), @"View between inset should be inset by partial layout guides");
@@ -157,7 +164,8 @@
 	//	Insets before the view controller is presented
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:controller.view], UIEdgeInsetsMake(0, 0, 0, 0)), @"Invalid");
 	
-	[mainWindow setRootViewController:navigation];
+	[self.mainWindow setRootViewController:navigation];
+	[self waitUntilLayoutSubviewsInViewController:controller];
 	
 	//	Insets after the view controller is presented
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:controller.view], UIEdgeInsetsMake(ValueiOS6_7(0, controller.topLayoutGuideLength), 0, 0, 0)), @"Top view should be inset by full layout guides");
@@ -187,7 +195,8 @@
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewBetweenInset], UIEdgeInsetsMake(0, 0, 0, 0)), @"Invalid");
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewInsetFromTop], UIEdgeInsetsMake(0, 0, 0, 0)), @"Invalid");
 	
-	[mainWindow setRootViewController:navigation];
+	[self.mainWindow setRootViewController:navigation];
+	[self waitUntilLayoutSubviewsInViewController:controller];
 	
 	//	Insets after the view controller is presented
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewAtTop], UIEdgeInsetsMake(ValueiOS6_7(0, controller.topLayoutGuideLength), 0, 0, 0)), @"Top view should be inset by full layout guides");
@@ -224,7 +233,8 @@
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewBetweenInsetSubview], UIEdgeInsetsMake(0, 0, 0, 0)), @"Invalid");
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewInsetFromTopSubview], UIEdgeInsetsMake(0, 0, 0, 0)), @"Invalid");
 	
-	[mainWindow setRootViewController:navigation];
+	[self.mainWindow setRootViewController:navigation];
+	[self waitUntilLayoutSubviewsInViewController:controller];
 	
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewAtTopSubview], UIEdgeInsetsMake(ValueiOS6_7(0, controller.topLayoutGuideLength - 5), 0, 0, 0)), @"Top view should be inset by full layout guides");
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewBetweenInsetSubview], UIEdgeInsetsMake(ValueiOS6_7(0, controller.topLayoutGuideLength - 10), 0, 0, 0)), @"View between inset should be inset by partial layout guides");
@@ -258,7 +268,8 @@
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewBetweenInsetSubview], UIEdgeInsetsMake(0, 0, 0, 0)), @"Invalid");
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewInsetFromTopSubview], UIEdgeInsetsMake(0, 0, 0, 0)), @"Invalid");
 	
-	[mainWindow setRootViewController:navigation];
+	[self.mainWindow setRootViewController:navigation];
+	[self waitUntilLayoutSubviewsInViewController:controller];
 	
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewAtTopSubview], UIEdgeInsetsMake(ValueiOS6_7(0, controller.topLayoutGuideLength - 5), 0, 0, 0)), @"Top view should be inset by full layout guides");
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewBetweenInsetSubview], UIEdgeInsetsMake(ValueiOS6_7(0, controller.topLayoutGuideLength - 10), 0, 0, 0)), @"View between inset should be inset by partial layout guides");
@@ -271,7 +282,7 @@
 		return;
 	
 	VCViewController* rootController = [[VCViewController alloc] init];
-	[mainWindow setRootViewController:rootController];
+	[self.mainWindow setRootViewController:rootController];
 	
 	VCViewController* controller = [[VCViewController alloc] init];
 	UIPopoverController* popover = [[UIPopoverController alloc] initWithContentViewController:controller];
@@ -296,7 +307,9 @@
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewBetweenInsetSubview], UIEdgeInsetsMake(0, 0, 0, 0)), @"Invalid");
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewInsetFromTopSubview], UIEdgeInsetsMake(0, 0, 0, 0)), @"Invalid");
 	
-	[popover presentPopoverFromRect:CGRectMake(100, 100, 100, 100) inView:mainWindow permittedArrowDirections:UIPopoverArrowDirectionAny animated:NO];
+	[popover presentPopoverFromRect:CGRectMake(100, 100, 100, 100) inView:self.mainWindow permittedArrowDirections:UIPopoverArrowDirectionAny animated:NO];
+	
+	[self waitUntilLayoutSubviewsInViewController:controller];
 	
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewAtTopSubview], UIEdgeInsetsMake(0, 0, 0, 0)), @"Top view should be inset by full layout guides");
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewBetweenInsetSubview], UIEdgeInsetsMake(0, 0, 0, 0)), @"View between inset should be inset by partial layout guides");
@@ -313,7 +326,7 @@
 		return;
 	
 	VCViewController* rootController = [[VCViewController alloc] init];
-	[mainWindow setRootViewController:rootController];
+	[self.mainWindow setRootViewController:rootController];
 	
 	VCViewController* controller = [[VCViewController alloc] init];
 	UINavigationController* navigation = [[UINavigationController alloc] initWithRootViewController:controller];
@@ -339,7 +352,8 @@
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewBetweenInsetSubview], UIEdgeInsetsMake(0, 0, 0, 0)), @"Invalid");
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewInsetFromTopSubview], UIEdgeInsetsMake(0, 0, 0, 0)), @"Invalid");
 	
-	[popover presentPopoverFromRect:CGRectMake(100, 100, 100, 100) inView:mainWindow permittedArrowDirections:UIPopoverArrowDirectionAny animated:NO];
+	[popover presentPopoverFromRect:CGRectMake(100, 100, 100, 100) inView:self.mainWindow permittedArrowDirections:UIPopoverArrowDirectionAny animated:NO];
+	[self waitUntilLayoutSubviewsInViewController:controller];
 	
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewAtTopSubview], UIEdgeInsetsMake(0, 0, 0, 0)), @"Top view should be inset by full layout guides");
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewBetweenInsetSubview], UIEdgeInsetsMake(0, 0, 0, 0)), @"View between inset should be inset by partial layout guides");
@@ -356,7 +370,7 @@
 		return;
 	
 	VCViewController* rootController = [[VCViewController alloc] init];
-	[mainWindow setRootViewController:rootController];
+	[self.mainWindow setRootViewController:rootController];
 	
 	VCViewController* controller = [[VCViewController alloc] init];
 	UINavigationController* navigation = [[UINavigationController alloc] initWithRootViewController:controller];
@@ -386,7 +400,8 @@
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewBetweenInsetSubview], UIEdgeInsetsMake(0, 0, 0, 0)), @"Invalid");
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewInsetFromTopSubview], UIEdgeInsetsMake(0, 0, 0, 0)), @"Invalid");
 	
-	[popover presentPopoverFromRect:CGRectMake(100, 100, 100, 100) inView:mainWindow permittedArrowDirections:UIPopoverArrowDirectionAny animated:NO];
+	[popover presentPopoverFromRect:CGRectMake(100, 100, 100, 100) inView:self.mainWindow permittedArrowDirections:UIPopoverArrowDirectionAny animated:NO];
+	[self waitUntilLayoutSubviewsInViewController:controller];
 	
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewAtTopSubview], UIEdgeInsetsMake(ValueiOS6_7(0, controller.topLayoutGuideLength - 5), 0, 0, 0)), @"Top view should be inset by full layout guides");
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewBetweenInsetSubview], UIEdgeInsetsMake(ValueiOS6_7(0, controller.topLayoutGuideLength - 10), 0, 0, 0)), @"View between inset should be inset by partial layout guides");
@@ -399,14 +414,14 @@
 
 - (void) test_UIViewControllerNested
 {
-	VCViewController* rootController = [[VCViewController alloc] init];
+	VCViewController* controller = [[VCViewController alloc] init];
 	
 	VCViewController* nestedRootChildController = [[VCViewController alloc] init];
-	[nestedRootChildController willMoveToParentViewController:rootController];
+	[nestedRootChildController willMoveToParentViewController:controller];
 	[nestedRootChildController.view setFrame:CGRectMake(0, 0, 50, 100)];
-	[rootController.view addSubview:nestedRootChildController.view];
-	[rootController addChildViewController:nestedRootChildController];
-	[nestedRootChildController didMoveToParentViewController:rootController];
+	[controller.view addSubview:nestedRootChildController.view];
+	[controller addChildViewController:nestedRootChildController];
+	[nestedRootChildController didMoveToParentViewController:controller];
 	
 	VCViewController* nestedRootChildChildController = [[VCViewController alloc] init];
 	[nestedRootChildChildController willMoveToParentViewController:nestedRootChildController];
@@ -416,11 +431,11 @@
 	[nestedRootChildChildController didMoveToParentViewController:nestedRootChildController];
 	
 	VCViewController* nestedRootInsetChildController = [[VCViewController alloc] init];
-	[nestedRootInsetChildController willMoveToParentViewController:rootController];
+	[nestedRootInsetChildController willMoveToParentViewController:controller];
 	[nestedRootInsetChildController.view setFrame:CGRectMake(60, 5, 50, 100)];
-	[rootController.view addSubview:nestedRootInsetChildController.view];
-	[rootController addChildViewController:nestedRootInsetChildController];
-	[nestedRootInsetChildController didMoveToParentViewController:rootController];
+	[controller.view addSubview:nestedRootInsetChildController.view];
+	[controller addChildViewController:nestedRootInsetChildController];
+	[nestedRootInsetChildController didMoveToParentViewController:controller];
 	
 	VCViewController* nestedRootInsetChildChildController = [[VCViewController alloc] init];
 	[nestedRootInsetChildChildController willMoveToParentViewController:nestedRootInsetChildController];
@@ -431,11 +446,11 @@
 	
 	VCViewController* nestedTopNavigationViewController = [[VCViewController alloc] init];
 	UINavigationController* nestedTopNavigationController = [[UINavigationController alloc] initWithRootViewController:nestedTopNavigationViewController];
-	[nestedTopNavigationController willMoveToParentViewController:rootController];
+	[nestedTopNavigationController willMoveToParentViewController:controller];
 	[nestedTopNavigationController.view setFrame:CGRectMake(130, 0, 50, 100)];
-	[rootController.view addSubview:nestedTopNavigationController.view];
-	[rootController addChildViewController:nestedTopNavigationController];
-	[nestedTopNavigationController didMoveToParentViewController:rootController];
+	[controller.view addSubview:nestedTopNavigationController.view];
+	[controller addChildViewController:nestedTopNavigationController];
+	[nestedTopNavigationController didMoveToParentViewController:controller];
 	
 	VCViewController* nestedTopNavigationChildViewController = [[VCViewController alloc] init];
 	[nestedTopNavigationChildViewController willMoveToParentViewController:nestedTopNavigationViewController];
@@ -446,11 +461,11 @@
 	
 	VCViewController* nestedInsetNavigationViewController = [[VCViewController alloc] init];
 	UINavigationController* nestedInsetNavigationController = [[UINavigationController alloc] initWithRootViewController:nestedInsetNavigationViewController];
-	[nestedInsetNavigationController willMoveToParentViewController:rootController];
+	[nestedInsetNavigationController willMoveToParentViewController:controller];
 	[nestedInsetNavigationController.view setFrame:CGRectMake(190, 10, 50, 100)];
-	[rootController.view addSubview:nestedInsetNavigationController.view];
-	[rootController addChildViewController:nestedInsetNavigationController];
-	[nestedInsetNavigationController didMoveToParentViewController:rootController];
+	[controller.view addSubview:nestedInsetNavigationController.view];
+	[controller addChildViewController:nestedInsetNavigationController];
+	[nestedInsetNavigationController didMoveToParentViewController:controller];
 	
 	VCViewController* nestedInsetNavigationChildViewController = [[VCViewController alloc] init];
 	[nestedInsetNavigationChildViewController willMoveToParentViewController:nestedInsetNavigationViewController];
@@ -469,14 +484,15 @@
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([nestedTopNavigationChildViewController insetsForView:nestedTopNavigationChildViewController.view], UIEdgeInsetsMake(0, 0, 0, 0)), @"Invalid");
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([nestedInsetNavigationChildViewController insetsForView:nestedInsetNavigationChildViewController.view], UIEdgeInsetsMake(0, 0, 0, 0)), @"Invalid");
 	
-	[mainWindow setRootViewController:rootController];
+	[self.mainWindow setRootViewController:controller];
+	[self waitUntilLayoutSubviewsInViewController:controller];
 	
-	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([nestedRootChildController insetsForView:nestedRootChildController.view], UIEdgeInsetsMake(ValueiOS6_7(0, rootController.topLayoutGuideLength), 0, 0, 0)), @"Nested controller should be inset by full layout guides");
-	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([nestedRootChildChildController insetsForView:nestedRootChildChildController.view], UIEdgeInsetsMake(ValueiOS6_7(0, rootController.topLayoutGuideLength - 10), 0, 0, 0)), @"Nested nested controller should be inset by partial layout guides");
-	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([nestedRootInsetChildController insetsForView:nestedRootInsetChildController.view], UIEdgeInsetsMake(ValueiOS6_7(0, rootController.topLayoutGuideLength - 5), 0, 0, 0)), @"Nested controller should be inset by partial layout guides");
+	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([nestedRootChildController insetsForView:nestedRootChildController.view], UIEdgeInsetsMake(ValueiOS6_7(0, controller.topLayoutGuideLength), 0, 0, 0)), @"Nested controller should be inset by full layout guides");
+	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([nestedRootChildChildController insetsForView:nestedRootChildChildController.view], UIEdgeInsetsMake(ValueiOS6_7(0, controller.topLayoutGuideLength - 10), 0, 0, 0)), @"Nested nested controller should be inset by partial layout guides");
+	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([nestedRootInsetChildController insetsForView:nestedRootInsetChildController.view], UIEdgeInsetsMake(ValueiOS6_7(0, controller.topLayoutGuideLength - 5), 0, 0, 0)), @"Nested controller should be inset by partial layout guides");
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([nestedRootInsetChildChildController insetsForView:nestedRootInsetChildChildController.view], UIEdgeInsetsMake(0, 0, 0, 0)), @"View inset a lot from the top should not be inset by any layout guides");
-	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([nestedTopNavigationViewController insetsForView:nestedTopNavigationViewController.view], UIEdgeInsetsMake(ValueiOS6_7(0, rootController.topLayoutGuideLength + nestedTopNavigationController.navigationBar.frame.size.height), 0, 0, 0)), @"Navigation view inset should be height of navigation bar + status bar");
-	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([nestedTopNavigationChildViewController insetsForView:nestedTopNavigationChildViewController.view], UIEdgeInsetsMake(ValueiOS6_7(0, rootController.topLayoutGuideLength + nestedTopNavigationController.navigationBar.frame.size.height - 30), 0, 0, 0)), @"Navigation view inset should be height of navigation bar + status bar");
+	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([nestedTopNavigationViewController insetsForView:nestedTopNavigationViewController.view], UIEdgeInsetsMake(ValueiOS6_7(0, controller.topLayoutGuideLength + nestedTopNavigationController.navigationBar.frame.size.height), 0, 0, 0)), @"Navigation view inset should be height of navigation bar + status bar");
+	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([nestedTopNavigationChildViewController insetsForView:nestedTopNavigationChildViewController.view], UIEdgeInsetsMake(ValueiOS6_7(0, controller.topLayoutGuideLength + nestedTopNavigationController.navigationBar.frame.size.height - 30), 0, 0, 0)), @"Navigation view inset should be height of navigation bar + status bar");
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([nestedInsetNavigationViewController insetsForView:nestedInsetNavigationViewController.view], UIEdgeInsetsMake(ValueiOS6_7(0, nestedTopNavigationController.navigationBar.frame.size.height), 0, 0, 0)), @"Navigation view inset should be height of navigation bar");
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([nestedInsetNavigationChildViewController insetsForView:nestedInsetNavigationChildViewController.view], UIEdgeInsetsMake(ValueiOS6_7(0, nestedTopNavigationController.navigationBar.frame.size.height - 30), 0, 0, 0)), @"Navigation view inset should be height of navigation bar");
 }
@@ -501,7 +517,8 @@
 	VCView* viewInsetFromTop = [[VCView alloc] initWithFrame:CGRectMake(220, 150, 100, 100)];
 	[controller.view addSubview:viewInsetFromTop];
 	
-	[mainWindow setRootViewController:navigation];
+	[self.mainWindow setRootViewController:navigation];
+	[self waitUntilLayoutSubviewsInViewController:controller];
 	
 	[controller.view setFrame:CGRectMake(0, -30, controller.view.frame.size.width, controller.view.frame.size.height)];
 	
@@ -519,7 +536,8 @@
 	[tabBar.tabBar setAlpha:0.9];
 	[tabBar setViewControllers:@[controller]];
 	
-	[mainWindow setRootViewController:tabBar];
+	[self.mainWindow setRootViewController:tabBar];
+	[self waitUntilLayoutSubviewsInViewController:controller];
 	
 	//	Insets after the view controller is presented
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:controller.view], UIEdgeInsetsMake(ValueiOS6_7(0, controller.topLayoutGuideLength), 0, controller.bottomLayoutGuideLength, 0)), @"Top view should be inset by full layout guides");
@@ -548,7 +566,8 @@
 	[viewAtBottom setAutoresizingMask:(UIViewAutoresizingFlexibleTopMargin)];
 	[controller.view addSubview:viewInsetFromBottom];
 	
-	[mainWindow setRootViewController:tabBar];
+	[self.mainWindow setRootViewController:tabBar];
+	[self waitUntilLayoutSubviewsInViewController:controller];
 	
 	//	Insets after the view controller is presented
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewBelowBottom], UIEdgeInsetsMake(0, 0, controller.bottomLayoutGuideLength + ValueiOS6_7(0, 30), 0)), @"Bottom view should be inset by full layout guides plus excess");
@@ -582,7 +601,8 @@
 	[controller.view addSubview:viewInsetFromBottom];
 	[viewInsetFromBottom addSubview:viewInsetFromBottomSubview];
 	
-	[mainWindow setRootViewController:tabBar];
+	[self.mainWindow setRootViewController:tabBar];
+	[self waitUntilLayoutSubviewsInViewController:controller];
 	
 	//	Insets after the view controller is presented
 	STAssertTrue(UIEdgeInsetsEqualToEdgeInsets([controller insetsForView:viewAtBottomSubview], UIEdgeInsetsMake(0, 0, controller.bottomLayoutGuideLength - ValueiOS6_7(0, 20), 0)), @"Bottom view should be inset by full layout guides");
