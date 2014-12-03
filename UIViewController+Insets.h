@@ -28,6 +28,8 @@
 //  Available from GitHub
 //  https://github.com/tparry/UIViewController-Insets
 
+#import <UIKit/UIKit.h>
+
 @interface UIViewController (Insets)
 
 - (UIEdgeInsets) insetsForView:(UIView*) view;
